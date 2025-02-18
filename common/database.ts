@@ -1,30 +1,11 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { client } from "strife.js";
-import {
-	ChannelType,
-	ThreadAutoArchiveDuration,
-	type Snowflake,
-	type TextBasedChannel,
-} from "discord.js";
-import config from "./config.js";
+import { type Snowflake, type TextBasedChannel } from "discord.js";
 
 let timeouts: Record<
 	Snowflake,
 	{ callback(): Promise<void>; timeout: NodeJS.Timeout } | undefined
 > = {};
-
-const threadName = "databases";
-export const databaseThread =
-	(await config.channels.modlogs.threads.fetch()).threads.find(
-		(thread) => thread.name === threadName,
-	) ??
-	(await config.channels.modlogs.threads.create({
-		name: threadName,
-		reason: "For databases",
-		type: ChannelType.PrivateThread,
-		invitable: false,
-		autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
-	}));
 
 // Define Mongoose schema and model for storing databases
 interface DatabaseDoc extends Document {

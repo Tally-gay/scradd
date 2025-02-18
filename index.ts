@@ -4,7 +4,6 @@ import dns from "node:dns";
 import { fileURLToPath } from "node:url";
 import { client, login } from "strife.js";
 import constants from "./common/constants.js";
-import pkg from "./package.json" assert { type: "json" };
 import features from "./common/features.js";
 
 dns.setDefaultResultOrder("ipv4first");
@@ -63,9 +62,7 @@ await login({
 	modulesDirectory: fileURLToPath(new URL("./modules", import.meta.url)),
 	defaultCommandAccess: process.env.GUILD_ID,
 	async handleError(error, event) {
-		const { default: logError } = await import("./modules/logging/errors.js");
-
-		await logError(error, event);
+		console.log(error, event);
 	},
 	clientOptions: {
 		intents:
@@ -87,16 +84,6 @@ await login({
 	},
 	commandErrorMessage: `${constants.emojis.statuses.no} An error occurred.`,
 });
-
-if (process.env.PORT) await import("./web/server.js");
-
-if (process.env.NODE_ENV === "production") {
-	const { default: log, LogSeverity, LoggingEmojis } = await import("./modules/logging/misc.js");
-	await log(
-		`${LoggingEmojis.Bot} Restarted bot on version **v${pkg.version}**`,
-		LogSeverity.ImportantUpdate,
-	);
-}
 
 const { cleanListeners } = await import("./common/database.js");
 await cleanListeners();
